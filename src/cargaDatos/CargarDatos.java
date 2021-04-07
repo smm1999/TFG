@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,11 @@ import com.csvreader.CsvWriter;
 import clases.Cancion;
 import clases.CancionAcortada;
 import clases.ExitoMusical;
+import fpm.AssocRuleMiner;
+import fpm.apriori.Apriori;
+import fpm.data.ItemSets;
+import fpm.data.MetaData;
+import fpm.fpg.FPGrowth;
 
 import java.io.Reader;
 import java.text.DateFormat;
@@ -39,12 +45,15 @@ public class CargarDatos {
 
 	
 	public static void main(String[] args) throws ParseException, IOException {
-
+		
         System.out.println("Comienza la ejecución con la correspondiente lectura del CSV...");
-        ImportarCSV2();
+        ImportarCSV();
         System.out.println("CSV leido correctamente; Datos añadidos al array con exito");
         System.out.println("Creacion del primer CSV con las cadenas por cada cancion...");
         ExpotarCSV(Exitos);
+        System.out.println("Importacion del nuevo CSV");
+        ImportarCSV2();
+        System.out.println("Finalizado con exito");
 	}
 
 	
@@ -68,35 +77,39 @@ public class CargarDatos {
             for(String cancion : Canciones) {//Recorremos cada cancion dentro de nuestro array
             	for(ExitoMusical song : ExitosOrdenadosFecha) {//Recorremos el array con toda la informacion completa ordenada por fecha
             		
+            		String cadenaCancion="";
             		if(cancion.equals(song.URL)){//De esta manera cada vez que aparece la misma cancion se añade informacion a la cadena, logrando obtener una unica cadena por cada cancion
             			
+            			String cadena="";
             			
             			if(song.getPosicion()>=1 && song.getPosicion()<=10) {
-                			String cadena = song.getRegion()+"|"+"1-10";
+                			cadena = song.getRegion()+"|"+"1-10";
                 			salidaCSV.write(cadena);
             				
             			}
             			else if (song.getPosicion()>=11 && song.getPosicion()<=25) {
-                			String cadena = song.getRegion()+"|"+"11-25";
+                			cadena = song.getRegion()+"|"+"11-25";
                 			salidaCSV.write(cadena);
             				
             			}
             			else if (song.getPosicion()>=26 && song.getPosicion()<=50) {
-                			String cadena = song.getRegion()+"|"+"26-50";
+                			cadena = song.getRegion()+"|"+"26-50";
                 			salidaCSV.write(cadena);
             				
             			}
             			else if (song.getPosicion()>=51 && song.getPosicion()<=100) {
-                			String cadena = song.getRegion()+"|"+"51-100";
+                			cadena = song.getRegion()+"|"+"51-100";
                 			salidaCSV.write(cadena);
             				
             			}
             			else if (song.getPosicion()>=101 && song.getPosicion()<=200) {
-                			String cadena = song.getRegion()+"|"+"101-200";
+                			cadena = song.getRegion()+"|"+"101-200";
                 			salidaCSV.write(cadena);
             				
             			}
-            		}           	
+
+            		}
+            		
             	}
             	salidaCSV.endRecord();
 	
@@ -120,7 +133,7 @@ public class CargarDatos {
 	
 	
 	 
-	 public static void ImportarCSV2() throws ParseException {
+	 public static void ImportarCSV() throws ParseException {
 	        try{
 	        	
 	            CsvReader leerCanciones = new CsvReader("dataSintitulo.csv");//abrimos nuestro CSV
@@ -188,6 +201,58 @@ public class CargarDatos {
 	            }
 	            
 	            System.out.println("El total de canciones distintas es de: " + cont1);
+	            
+	            
+	        } catch(FileNotFoundException e) {
+	        	
+	            e.printStackTrace();
+	            
+	        } catch(IOException e) {
+	        	
+	            e.printStackTrace();
+	        }
+
+	 }
+	 
+	 
+	 public static void ImportarCSV2() throws ParseException {
+	        try{
+	        	
+	            CsvReader leerCanciones = new CsvReader("Patron.csv");//abrimos nuestro CSV
+	            leerCanciones.readHeaders();//Leemos las cabeceras con los indicadores
+	            
+	            List<List<String>> database = new ArrayList<>();//Base de datos para aplicar los algoritmos
+	            
+	            while(leerCanciones.readRecord()) {// Mientras haya lineas obtenemos los datos del archivo
+	            	//leemos cada parte de las cadenas para mas tarde crear un objeto con ellas
+	            	
+	                String CadenaCompleta = leerCanciones.getRawRecord();
+	                //System.out.println(CadenaCompleta);
+	                database.add(Arrays.asList(CadenaCompleta));
+	      
+	            }
+	            
+	            leerCanciones.close(); // Cierra el archivo
+	            
+	            
+	            try {
+	            	
+	            	AssocRuleMiner method = new FPGrowth();
+	                method.setMinSupportLevel(2);
+
+	                MetaData metaData = new MetaData(database);
+
+	                // obtain all frequent item sets with support level not below 2
+	                ItemSets frequent_item_sets = method.minePatterns(database, metaData.getUniqueItems());
+	                frequent_item_sets.stream().forEach(itemSet -> System.out.println("item-set: " + itemSet));
+
+	                // obtain the max frequent item sets
+	                ItemSets max_frequent_item_sets = method.findMaxPatterns(database, metaData.getUniqueItems());
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+                
 	            
 	            
 	        } catch(FileNotFoundException e) {
