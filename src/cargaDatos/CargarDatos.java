@@ -18,7 +18,7 @@ import java.util.HashSet;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
-import clases.Cancion;
+
 import clases.CancionAcortada;
 import clases.ExitoMusical;
 import fpm.AssocRuleMiner;
