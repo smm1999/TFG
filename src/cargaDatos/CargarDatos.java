@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,17 +54,194 @@ public class CargarDatos {
         ExpotarCSVsinRepeticiones(Exitos);
         System.out.println("Importacion del nuevo CSV");
         ImportarCSVpropioConFPGrowth();
-        System.out.println("Finalizado con exito");
+        System.out.println("CSV de FPGrowth terminado con exito");
+        ImportarCSVpropioConApriori();
+        System.out.println("CSV de Apriori terminado con exito");
+        System.out.println("Fin del programa");
 	}
 
-	
+	 public static void ImportarCSVinicial() throws ParseException {
+	        try{
+	        	
+	            CsvReader leerCanciones = new CsvReader("dataSintitulo.csv");//abrimos nuestro CSV
+	            leerCanciones.readHeaders();//Leemos las cabeceras con los indicadores
+	            
+	            while(leerCanciones.readRecord()) {// Mientras haya lineas obtenemos los datos del archivo
+	            	//leemos cada parte de las cadenas para mas tarde crear un objeto con ellas
+	            	
+	                int Position = Integer.parseInt(leerCanciones.get(0));//Posción de la canción
+	                String URL = leerCanciones.get(1);//URL de la canción
+	                
+	                DateFormat format = new SimpleDateFormat("dd/MM/yyyy");//Establecemos el formato de fechas
+
+	                String Date = leerCanciones.get(2);//Leemos la fecha
+	                String Region = leerCanciones.get(3);//Leemos la región
+	                
+	                m=m+1;//Contador del total de filas que lee
+	                try {
+		               
+	                Exitos.add(new ExitoMusical(Position,URL,format.parse(Date),Region)); // Añade la informacion al Arraylist correspondiente
+	                Canciones.add(URL);//Añadimos todas las canciones a un array para mas tarde eliminar los elementos repetidos y quedarnos con las canciones totales
+						
+					} 
+	                catch (Exception e) {
+						e.printStackTrace();
+						System.out.println("El total de lineas leidas es de " + m);//Gracias a este contador sabriamos que linea exacta ha causado el error
+					}
+	                	
+
+	            }
+	            
+	            leerCanciones.close(); // Cierra el archivo
+	            
+	            //A continuacion repetimos el proceso seguido con el resto de csv para añadir la totalidad de la inforamcion a nuestro programa
+	            
+	            CsvReader leerCanciones2 = new CsvReader("dataSintitulo2.csv");
+	            leerCanciones2.readHeaders();
+	            
+	            while(leerCanciones2.readRecord()) {
+	            	
+	                int Position = Integer.parseInt(leerCanciones2.get(0));
+	                String URL = leerCanciones2.get(1);
+	                
+	                DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+	                String Date = leerCanciones2.get(2);
+	                String Region = leerCanciones2.get(3);
+	                
+	                m=m+1;
+	                try {
+		               
+	                Exitos.add(new ExitoMusical(Position,URL,format.parse(Date),Region)); 
+	                Canciones.add(URL);
+						
+					} 
+	                catch (Exception e) {
+						e.printStackTrace();
+						System.out.println("El total de lineas leidas es de " + m);
+					}
+	                	
+
+	            }
+	            
+	            leerCanciones2.close(); 
+	            
+	            CsvReader leerCanciones3 = new CsvReader("dataSintitulo3.csv");
+	            leerCanciones3.readHeaders();
+	            
+	            while(leerCanciones3.readRecord()) {
+	            	
+	            	
+	                int Position = Integer.parseInt(leerCanciones3.get(0));
+	                String URL = leerCanciones3.get(1);
+	                
+	                DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+	                String Date = leerCanciones3.get(2);
+	                String Region = leerCanciones3.get(3);
+	                
+	                m=m+1;
+	                try {
+		               
+	                Exitos.add(new ExitoMusical(Position,URL,format.parse(Date),Region));
+	                Canciones.add(URL);
+						
+					} 
+	                catch (Exception e) {
+						e.printStackTrace();
+						System.out.println("El total de lineas leidas es de " + m);
+					}
+	                	
+
+	            }
+	            
+	            leerCanciones3.close();
+	            
+	            CsvReader leerCanciones4 = new CsvReader("dataSintitulo4.csv");
+	            leerCanciones4.readHeaders();
+	            
+	            while(leerCanciones4.readRecord()) {
+	            	
+	            	
+	                int Position = Integer.parseInt(leerCanciones4.get(0));
+	                String URL = leerCanciones4.get(1);
+	                
+	                DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+	                String Date = leerCanciones4.get(2);
+	                String Region = leerCanciones4.get(3);
+	                
+	                m=m+1;
+	                try {
+		               
+	                Exitos.add(new ExitoMusical(Position,URL,format.parse(Date),Region));
+	                Canciones.add(URL);
+						
+					} 
+	                catch (Exception e) {
+						e.printStackTrace();
+						System.out.println("El total de lineas leidas es de " + m);
+					}
+	                	
+
+	            }
+	            
+	            leerCanciones4.close(); 
+	            
+	            
+	            System.out.println("Lectura realizada");
+	            
+	            ExitosOrdenadosFecha = Exitos;
+	            Collections.sort(ExitosOrdenadosFecha);//Hacemos uso de sort para asegurarnos de que al leer las filas estas están ordenadas por fecha
+	            
+	            int n1=0;
+	            //Seguido realizaremos un impresion por pantalla para asegurar el correcto estado de los datos y que están en el orden esperado
+	            for(ExitoMusical song : ExitosOrdenadosFecha) {
+	            	n1 = n1+1;
+	            	System.out.println(n1 +" " + song.URL + " "+ song.Region + " " + song.fecha);
+	            }
+	            
+
+	            
+	            int cont=0;
+	            for(String cancion : Canciones) {//Contamos el total de filas antes eliminar las repetidas
+	                cont++;
+	            }
+	            
+	            System.out.println("El total de lineas leidas es de: " + cont); //imprimimos el total de lineas para asegurarnos que corresponde con la totalidad de los csv
+	            
+	            //eliminamos los elementos repetidos de nuestro arraylist haciendo uso de un hashSet intermedio, el cual no permite elementos repetidos
+	            Set<String> hashSet = new HashSet<String>(Canciones);
+	            Canciones.clear();
+	            Canciones.addAll(hashSet);//Tras esto tendremos un array con la totalidad de las diferentes canciones de nuestro conjunto de datos
+	            
+	            int cont1=0;
+	            for(String cancion : Canciones) { //Contamos el total de canciones distintas despues de actualizar el arraylist
+	            	
+	                cont1++;
+	            }
+	            
+	            System.out.println("El total de canciones distintas es de: " + cont1);
+	            
+	            
+	        } catch(FileNotFoundException e) {
+	        	
+	            e.printStackTrace();
+	            
+	        } catch(IOException e) {
+	        	
+	            e.printStackTrace();
+	        }
+
+	 }
+
 	public static void ExpotarCSVconRepeticiones(List<ExitoMusical> Exitos) throws IOException {
 		String salidaArchivo = "Patron.csv"; //Nombre del archivo donde guardaremos las cadenas de las diferentes canciones
 		boolean existe = new File(salidaArchivo).exists();//verificamos que existe el archivo
 		
 			if(existe) {
 			
-				boolean fichero = new File(salidaArchivo).delete();//En el caso de que exista el fichero lo elimina para crear un nuevo y no te tener que sobreescribir ¡
+				boolean fichero = new File(salidaArchivo).delete();//En el caso de que exista el fichero lo elimina para crear un nuevo y no te tener que sobreescribir
            
 			}
 			
@@ -73,15 +251,16 @@ public class CargarDatos {
             salidaCSV.write("Region|RangoPosicion");//escribimos los indicadores
             
             salidaCSV.endRecord(); // Deja de escribir en el archivo
+            salidaCSV.flush(); //limpiamos para evitar posibles errores
 
-            for(String cancion : Canciones) {//Recorremos cada cancion dentro de nuestro array
+            for(String cancion : Canciones) {//Recorremos cada canción dentro de nuestro array
             	for(ExitoMusical song : ExitosOrdenadosFecha) {//Recorremos el array con toda la informacion completa ordenada por fecha
             		
             		String cadenaCancion="";
-            		if(cancion.equals(song.URL)){//De esta manera cada vez que aparece la misma cancion se añade informacion a la cadena, logrando obtener una unica cadena por cada cancion
+            		if(cancion.equals(song.URL)){//De esta manera cada vez que aparece la misma canción se añade informacion a la cadena, logrando obtener una única cadena por cada canción
             			
             			String cadena="";
-            			
+            			//Estas canciones seran clasificadas por rango para ayudar al uso de los algoritmos
             			if(song.getPosicion()>=1 && song.getPosicion()<=10) {
                 			cadena = song.getRegion()+"|"+"1-10";
                 			salidaCSV.write(cadena);
@@ -111,8 +290,7 @@ public class CargarDatos {
             		}
             		
             	}
-            	salidaCSV.endRecord();
-	
+            	salidaCSV.endRecord();//dejamos de escribrir
             try {
             	
             	//Crea el archivo
@@ -134,7 +312,7 @@ public class CargarDatos {
 	
 	public static void ExpotarCSVsinRepeticiones(List<ExitoMusical> Exitos) throws IOException {
 		String salidaArchivo = "Patron.csv"; //Nombre del archivo donde guardaremos las cadenas de las diferentes canciones
-		boolean existe = new File(salidaArchivo).exists();//verificamos que existe el archivo
+		boolean existe = new File(salidaArchivo).exists();//Verificamos que existe el archivo
 		
 			if(existe) {
 			
@@ -144,20 +322,22 @@ public class CargarDatos {
 			
 			CsvWriter salidaCSV = new CsvWriter(new FileWriter(salidaArchivo, true), ',');
             
-            // Datos para identificar las columnas
-            salidaCSV.write("Region|RangoPosicion");//escribimos los indicadores
+            //Datos para identificar las columnas
+            salidaCSV.write("Region|RangoPosicion");//Escribimos los indicadores
             
-            salidaCSV.endRecord(); // Deja de escribir en el archivo
+            salidaCSV.endRecord(); //Deja de escribir en el archivo
+            salidaCSV.flush(); //Limpiamos los buffer
 
-            for(String cancion : Canciones) {//Recorremos cada cancion dentro de nuestro array
+            for(String cancion : Canciones) {//Recorremos cada canción dentro de nuestro array
             	String previo="";
-            	for(ExitoMusical song : ExitosOrdenadosFecha) {//Recorremos el array con toda la informacion completa ordenada por fecha
+            	for(ExitoMusical song : ExitosOrdenadosFecha) {//Recorremos el array con toda la información completa ordenada por fecha
             		
             		String cadenaCancion="";
-            		if(cancion.equals(song.URL)){//De esta manera cada vez que aparece la misma cancion se añade informacion a la cadena, logrando obtener una unica cadena por cada cancion
+            		if(cancion.equals(song.URL)){//De esta manera cada vez que aparece la misma canción se añade informacion a la cadena, logrando obtener una única cadena por cada canción
             			
             			String cadena="";
-            			
+            			//Estas canciones seran clasificadas por rango para ayudar al uso de los algoritmos, además nos aseguraremos de evitar repeticiones respecto a la anterior aparición
+
             			if(song.getPosicion()>=1 && song.getPosicion()<=10) {
                 			cadena = song.getRegion()+"|"+"1-10";
             			}
@@ -179,19 +359,19 @@ public class CargarDatos {
             			}
             			
             			if (previo.equals(cadena)) {
-            				//System.out.println("cadena duplicada");
+            				//Si la nueva cadena es igual que la anterior no hacemos nada
             			}
             			else {
-//            				System.out.println(cadena + " diferente de " + previo);
+            				//Si la cadena cambia respecto a la anterior se considera información de utilidad y será escrita
             				salidaCSV.write(cadena);
-            				previo = cadena;
+            				previo = cadena;//Machacamos el valor para la siguiente iteración
             			}
             			
 
             		}
             		
             	}
-            	salidaCSV.endRecord();
+            	salidaCSV.endRecord();//Completamos
 	
             try {
             	
@@ -212,88 +392,7 @@ public class CargarDatos {
 	}
 	
 	
-	 
-	 public static void ImportarCSVinicial() throws ParseException {
-	        try{
-	        	
-	            CsvReader leerCanciones = new CsvReader("dataSintitulo.csv");//abrimos nuestro CSV
-	            leerCanciones.readHeaders();//Leemos las cabeceras con los indicadores
-	            
-	            while(leerCanciones.readRecord()) {// Mientras haya lineas obtenemos los datos del archivo
-	            	//leemos cada parte de las cadenas para mas tarde crear un objeto con ellas
-	            	
-	                int Position = Integer.parseInt(leerCanciones.get(0));
-	                String URL = leerCanciones.get(1);
-	                
-	                DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-
-	                String Date = leerCanciones.get(2);
-	                String Region = leerCanciones.get(3);
-	                
-	                m=m+1;//Contador del total de filas que lee
-	                try {
-		               
-	                Exitos.add(new ExitoMusical(Position,URL,format.parse(Date),Region)); // Añade la informacion al Arraylist correspondiente
-	                Canciones.add(URL);//Añadimos todas las canciones a un array para mas tarde eliminar los elementos repetidos
-						
-					} 
-	                catch (Exception e) {
-						e.printStackTrace();
-						System.out.println("El total de lineas leidas es de " + m);
-					}
-	                	
-
-	            }
-	            
-	            leerCanciones.close(); // Cierra el archivo
-	            
-	            System.out.println("Lectura realizada");
-	            
-	            ExitosOrdenadosFecha = Exitos;
-	            Collections.sort(ExitosOrdenadosFecha);//hacemos uso de sort para asegurarnos de que al leer las filas estas están ordenadas por fila
-	            
-	            System.out.println("Array ordenador por fecha: ");
-	            
-	            int n1=0;
-	            for(ExitoMusical song : ExitosOrdenadosFecha) {
-	            	n1 = n1+1;
-	            	System.out.println(n1 +" " + song.URL + " "+ song.Region + " " + song.fecha);
-	            }
-	            
-
-	            
-	            int cont=0;
-	            for(String cancion : Canciones) {//Contamos el total de filas antes eliminar las repetidas
-	                cont++;
-	            }
-	            
-	            System.out.println("El total de lineas leidas es de: " + cont);
-	            
-	            //eliminamos los elementos repetidos de nuestro arraylist haciendo uso de un hashSet intermedio que no permite elementos repetidos
-	            Set<String> hashSet = new HashSet<String>(Canciones);
-	            Canciones.clear();
-	            Canciones.addAll(hashSet);
-	            
-	            int cont1=0;
-	            for(String cancion : Canciones) { //Contamos el total de canciones distintas despues de actualizar el arraylist
-	            	
-	                cont1++;
-	            }
-	            
-	            System.out.println("El total de canciones distintas es de: " + cont1);
-	            
-	            
-	        } catch(FileNotFoundException e) {
-	        	
-	            e.printStackTrace();
-	            
-	        } catch(IOException e) {
-	        	
-	            e.printStackTrace();
-	        }
-
-	 }
-	 
+	 	 
 	 
 	 public static void ImportarCSVpropioConFPGrowth() throws ParseException {
 	        try{
@@ -301,7 +400,7 @@ public class CargarDatos {
 	            CsvReader leerCanciones = new CsvReader("Patron.csv");//abrimos nuestro CSV
 	            leerCanciones.readHeaders();//Leemos las cabeceras con los indicadores
 	            
-	            List<List<String>> database = new ArrayList<>();//Base de datos para aplicar los algoritmos
+	            List<List<String>> database = new ArrayList<>();//Creamos la base de datos para aplicar los algoritmos
 	            
 	            while(leerCanciones.readRecord()) {// Mientras haya lineas obtenemos los datos del archivo
 	            	//leemos cada parte de las cadenas para mas tarde crear un objeto con ellas
@@ -317,18 +416,48 @@ public class CargarDatos {
 	            
 	            try {
 	            	
-	            	AssocRuleMiner method = new FPGrowth();
-	                method.setMinSupportLevel(2);
+	            	String salidaArchivo = "SolucionFPgrowth.csv"; //Nombre del archivo donde se guardan los resultados del algoritmo FPgrowth
+	            	boolean existe = new File(salidaArchivo).exists();//verificamos que existe el archivo
+	            		
+	            		if(existe) {
+	            			
+	            			boolean fichero = new File(salidaArchivo).delete();//En el caso de que exista el fichero lo elimina para crear un nuevo y no te tener que sobreescribir
+	                       
+	            		}
+	            	CsvWriter salidaCSV = new CsvWriter(new FileWriter(salidaArchivo, true), ',');
+	                        
+	                // Datos para identificar las columnas
+	                salidaCSV.write("Item-set: 'cadena' (nivel de soporte de la cadena)");//escribimos los indicadores
+	                        
+	                salidaCSV.endRecord(); // Deja de escribir en el archivo
+						
+	            	
+	            	AssocRuleMiner method = new FPGrowth();//Elegimos el algoritmo a utilizar sobre los datos
+	                method.setMinSupportLevel(2);//Elegimos el nivel de soporte mínimo que consideramos de interes
 
-	                MetaData metaData = new MetaData(database);
+	                MetaData metaData = new MetaData(database);//Aplicamos la función de datos a la database
 
-	                // obtain all frequent item sets with support level not below 2
+	                //Escribimos todos los resultados obtenido con nivel de soporte superior a 2 en nuestro fichero además de hacer una impresión por pantalla a forma de comprobación
 	                ItemSets frequent_item_sets = method.minePatterns(database, metaData.getUniqueItems());
-	                frequent_item_sets.stream().forEach(itemSet -> System.out.println("item-set: " + itemSet));
-
-	                // obtain the max frequent item sets
-	                ItemSets max_frequent_item_sets = method.findMaxPatterns(database, metaData.getUniqueItems());
-					
+	                frequent_item_sets.stream().forEach((itemSet) -> {
+	                	
+						try {
+							//Procedemos a escribir los resultados en el fichero
+							salidaCSV.write("item-set: " + itemSet);
+			                salidaCSV.endRecord();
+			                System.out.println("item-set: " + itemSet);
+			                
+						} catch (IOException e) {
+							
+							e.printStackTrace();
+						}
+						
+	                });
+	                salidaCSV.write("Final del csv de FPGrowth");
+	                salidaCSV.endRecord();//Acabamos la escritura
+	                salidaCSV.flush();//Limpiamos el buffer
+	                salidaCSV.close();//Cerramos nuestro archivo 
+	                
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -345,41 +474,66 @@ public class CargarDatos {
 	        }
 
 	 }
-	 
+	 //A continuación repetiremos el mismo proceso para el caso del algoritmo Apriori, el cual será mas lento que el anterior pero que nos servirá para constrastar resultados entre ambos
 	 public static void ImportarCSVpropioConApriori() throws ParseException {
 	        try{
 	        	
-	            CsvReader leerCanciones = new CsvReader("Patron.csv");//abrimos nuestro CSV
-	            leerCanciones.readHeaders();//Leemos las cabeceras con los indicadores
+	            CsvReader leerCanciones = new CsvReader("Patron.csv");
+	            leerCanciones.readHeaders();
 	            
-	            List<List<String>> database = new ArrayList<>();//Base de datos para aplicar los algoritmos
+	            List<List<String>> database = new ArrayList<>();
 	            
-	            while(leerCanciones.readRecord()) {// Mientras haya lineas obtenemos los datos del archivo
-	            	//leemos cada parte de las cadenas para mas tarde crear un objeto con ellas
+	            while(leerCanciones.readRecord()) {
 	            	
 	                String CadenaCompleta = leerCanciones.getRawRecord();
-	                //System.out.println(CadenaCompleta);
 	                database.add(Arrays.asList(CadenaCompleta));
 	      
 	            }
 	            
-	            leerCanciones.close(); // Cierra el archivo
+	            leerCanciones.close();
 	            
 	            
 	            try {
 	            	
-	            	AssocRuleMiner method = new Apriori();
+	            	String salidaArchivo = "SolucionApriori.csv";
+	            	boolean existe = new File(salidaArchivo).exists();
+	            		
+	            		if(existe) {
+	            			
+	            			boolean fichero = new File(salidaArchivo).delete();
+	                       
+	            		}
+	            	CsvWriter salidaCSV = new CsvWriter(new FileWriter(salidaArchivo, true), ',');
+	                        
+	                
+	                salidaCSV.write("Item-set: 'cadena' (nivel de soporte de la cadena)");
+	                        
+	                salidaCSV.endRecord();
+						
+	            	
+	                AssocRuleMiner method = new Apriori();
 	                method.setMinSupportLevel(2);
 
 	                MetaData metaData = new MetaData(database);
-
-	                // obtain all frequent item sets with support level not below 2
+	                
 	                ItemSets frequent_item_sets = method.minePatterns(database, metaData.getUniqueItems());
-	                frequent_item_sets.stream().forEach(itemSet -> System.out.println("item-set: " + itemSet));
-
-	                // obtain the max frequent item sets
-	                ItemSets max_frequent_item_sets = method.findMaxPatterns(database, metaData.getUniqueItems());
-					
+	                frequent_item_sets.stream().forEach((itemSet) -> {
+	                	
+	                
+							try {
+								salidaCSV.write(" item-set: " + itemSet);
+								salidaCSV.endRecord();
+								System.out.println("item-set: " + itemSet);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						
+	                });
+	                salidaCSV.write("Final del csv de Apriori");
+	                salidaCSV.endRecord();
+	                salidaCSV.flush();
+	                salidaCSV.close();
+	                
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
