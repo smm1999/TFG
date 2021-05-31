@@ -51,7 +51,7 @@ public class CargarDatos {
         ImportarCSVinicial();
         System.out.println("CSV leido correctamente; Datos añadidos al array con exito");
         System.out.println("Creacion del primer CSV con las cadenas por cada cancion...");
-        ExpotarCSVsinRepeticiones(Exitos);
+        ExportarCSVsinRepeticiones(Exitos);
         System.out.println("Importacion del nuevo CSV");
         ImportarCSVpropioConFPGrowth();
         System.out.println("CSV de FPGrowth terminado con exito");
@@ -310,7 +310,7 @@ public class CargarDatos {
 	}
 	
 	
-	public static void ExpotarCSVsinRepeticiones(List<ExitoMusical> Exitos) throws IOException {
+	public static void ExportarCSVsinRepeticiones(List<ExitoMusical> Exitos) throws IOException {
 		String salidaArchivo = "Patron.csv"; //Nombre del archivo donde guardaremos las cadenas de las diferentes canciones
 		boolean existe = new File(salidaArchivo).exists();//Verificamos que existe el archivo
 		
